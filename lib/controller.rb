@@ -23,6 +23,10 @@ class Controller
     project_name = @view.ask_for_input('What is the name of your project?')
     project = Project.new(name: project_name)
     save_project(project)
+
+    return unless @view.ask_for_option('Do you want to start a session for this project?', %w[Yes No]) == 'Yes'
+
+    start_session(project_name)
   end
 
   def save_project(project)

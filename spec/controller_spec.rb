@@ -38,9 +38,15 @@ RSpec.describe Controller do
 
         project_instance = Project.new(name: 'Project Name')
         allow(Project).to receive(:new).with(name: 'Project Name').and_return(project_instance)
+        allow(project_instance).to receive(:save).and_return(true)
 
-        expect(project_instance).to receive(:save).and_return(true)
+        expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
+                                                      %w[Yes No]).and_return('Yes')
+
+        expect(controller).to receive(:start_session).with('Project Name')
+
         expect(view).to receive(:display_success).with("Project 'Project Name' created successfully")
+
         controller.execute
       end
     end
@@ -55,9 +61,14 @@ RSpec.describe Controller do
         allow(Project).to receive(:new).with(name: 'Project Name').and_return(project_instance)
 
         allow(project_instance).to receive(:valid?).and_return(false)
-        allow(project_instance).to receive_message_chain(:errors, :full_messages).and_return(['Error Message'])
+
+        allow(project_instance.errors).to receive(:full_messages).and_return(['Error Message'])
 
         expect(view).to receive(:display_error).with("Could not create project 'Project Name': Error Message")
+
+        expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
+                                                      %w[Yes No]).and_return('No')
+
         controller.execute
       end
     end
