@@ -6,6 +6,16 @@ class Session < Sequel::Model
 
   many_to_one :project
 
+  def before_create
+    self.created_at ||= Time.now
+    super
+  end
+
+  def before_update
+    self.updated_at = Time.now
+    super
+  end
+
   def validate
     super
     validates_presence :project_id
