@@ -96,5 +96,18 @@ RSpec.describe Controller do
         controller.execute
       end
     end
+
+    context 'when the list option is provided' do
+      let(:options) { { list: true } }
+
+      it 'lists all the projects' do
+        # Stubbing Project.all to return a dummy project
+        allow(Project).to receive(:all).and_return([Project.new(name: 'Dummy Project')])
+
+        expect(view).to receive(:display_projects).with([Project.new(name: 'Dummy Project')])
+
+        controller.execute
+      end
+    end
   end
 end

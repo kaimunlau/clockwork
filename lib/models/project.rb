@@ -27,4 +27,8 @@ class Project < Sequel::Model
 
     false
   end
+
+  def status
+    ' | in progress' if session_running?
+  end
 end

@@ -43,6 +43,13 @@ class View
     display_error('No projects yet. Please create a project first. Run clockwork.rb -h for help')
   end
 
+  def display_projects(projects)
+    frame do
+      puts 'Your projects:'
+      projects.each { |project| puts "#{project.name}#{project.status}" }
+    end
+  end
+
   private
 
   def frame(&block)
