@@ -22,11 +22,15 @@ class Controller
     @view.display_message('Enter the name of the project:')
     project_name = @view.ask_for_input
     project = Project.new(name: project_name)
+    save_project(project)
+  end
+
+  def save_project(project)
     if project.valid?
       project.save
-      @view.display_message("Project '#{project_name}' created successfully")
+      @view.display_message("Project '#{project.name}' created successfully")
     else
-      @view.display_error("Could not create project '#{project_name}': #{project.errors.full_messages.join(', ')}")
+      @view.display_error("Could not create project '#{project.name}': #{project.errors.full_messages.join(', ')}")
     end
   end
 end
