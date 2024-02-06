@@ -4,6 +4,8 @@
 class Project < Sequel::Model
   plugin :validation_helpers
 
+  one_to_many :sessions
+
   def before_create
     self.created_at ||= Time.now
     super
@@ -18,5 +20,11 @@ class Project < Sequel::Model
     super
     validates_presence :name
     validates_unique :name
+  end
+
+  def session_running?
+    return sessions.filter { |s| s.end_time.nil? }.count.positive? if sessions.any?
+
+    false
   end
 end

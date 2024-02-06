@@ -23,12 +23,24 @@ class View
     end
   end
 
+  def ask_for_option(question, options)
+    frame do
+      CLI::UI::Prompt.ask(question) do |handler|
+        options.each { |option| handler.option(option) { |selection| selection } }
+      end
+    end
+  end
+
   def welcome
-    display_output "Welcome to Clockwork! run 'clockwork.rb -h' for help."
+    display_message "Welcome to Clockwork! run 'clockwork.rb -h' for help."
   end
 
   def too_many_options
-    display_output "Too many options! run 'clockwork.rb -h' for help."
+    display_message "Too many options! run 'clockwork.rb -h' for help."
+  end
+
+  def no_projects
+    display_error('No projects yet. Please create a project first. Run clockwork.rb -h for help')
   end
 
   private
