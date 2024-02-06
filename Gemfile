@@ -13,3 +13,6 @@ gem 'sequel'
 
 # Use RSpec as a testing framework
 gem 'rspec'
+
+# Use CLI UI as a user interface
+gem 'cli-ui'
