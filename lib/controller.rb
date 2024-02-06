@@ -15,6 +15,7 @@ class Controller
     # TODO: Implement the logic to execute various actions based on the options
     new_project if @options[:new]
     start_session(@options[:start]) if @options[:start]
+    list_projects if @options[:list]
   end
 
   private
@@ -64,5 +65,12 @@ class Controller
     else
       @view.display_error("Could not start session for project '#{session.project.name}': #{session.errors.full_messages.join(', ')}")
     end
+  end
+
+  def list_projects
+    projects = Project.all
+    return @view.no_projects if projects.empty?
+
+    @view.display_projects(projects)
   end
 end
