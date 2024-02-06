@@ -2,6 +2,9 @@
 
 source 'https://rubygems.org'
 
+# Use Rake as a task runner
+gem 'rake'
+
 # Use SQLite as a database
 gem 'sqlite3'
 
