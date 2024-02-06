@@ -2,6 +2,10 @@
 
 # This file is the entry point for the program
 
+require 'sequel'
+DB = Sequel.sqlite('db/database.db')
+require_relative 'models/project'
+require_relative 'models/session'
 require_relative 'option_parser'
 require_relative 'controller'
 
