@@ -8,7 +8,7 @@ require_relative 'models/project'
 require_relative 'models/session'
 require_relative 'option_parser'
 require_relative 'view'
-require_relative 'controller'
+require_relative 'router'
 
 # Parse options from command line
 options = OptionParser.parse(ARGV)
@@ -17,5 +17,5 @@ options = OptionParser.parse(ARGV)
 view = View.new
 
 # Execute program using controller and passing options
-controller = Controller.new(options, view)
-controller.execute
+router = Router.new(options, view)
+router.execute

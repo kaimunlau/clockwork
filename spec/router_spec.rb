@@ -3,21 +3,21 @@
 require 'rspec'
 require 'sequel'
 DB = Sequel.sqlite('db/database.db')
-require_relative '../lib/controller'
+require_relative '../lib/router'
 require_relative '../lib/view'
 require_relative '../lib/models/project'
 require_relative '../lib/models/session'
 
-RSpec.describe Controller do
+RSpec.describe Router do
   let(:view) { instance_double(View) }
   let(:options) { {} }
-  let(:controller) { Controller.new(options, view) }
+  let(:router) { Router.new(options, view) }
 
   describe '#execute' do
     context 'when no options are provided' do
       it 'displays the welcome message' do
         expect(view).to receive(:welcome)
-        controller.execute
+        router.execute
       end
     end
 
@@ -26,7 +26,7 @@ RSpec.describe Controller do
 
       it 'displays the too many options message' do
         expect(view).to receive(:too_many_options)
-        controller.execute
+        router.execute
       end
     end
 
@@ -43,11 +43,11 @@ RSpec.describe Controller do
         expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
                                                       %w[Yes No]).and_return('Yes')
 
-        expect(controller).to receive(:start_session).with('Project Name')
+        expect(router).to receive(:start_session).with('Project Name')
 
         expect(view).to receive(:display_success).with("Project 'Project Name' created successfully")
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe Controller do
         expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
                                                       %w[Yes No]).and_return('No')
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe Controller do
 
         expect(view).to receive(:display_success).with("Session started for project 'Project Name'")
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -106,7 +106,7 @@ RSpec.describe Controller do
 
         expect(view).to receive(:display_projects).with([Project.new(name: 'Dummy Project')])
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -129,16 +129,16 @@ RSpec.describe Controller do
         # Stubbing the find method of Session to return the running session
         allow(Session).to receive(:where).and_return([running_session])
 
-        # Expecting the controller to save the session
+        # Expecting the router to save the session
         expect(running_session).to receive(:save)
 
-        # Expecting the controller to update the end time of the session
+        # Expecting the router to update the end time of the session
         expect(running_session).to receive(:end_time=)
 
         # Expecting a success message to be displayed
         expect(view).to receive(:display_success).with("Session ended for project 'Running Project'")
 
-        controller.execute
+        router.execute
       end
 
       it 'displays an error message if no session is running' do
@@ -148,7 +148,7 @@ RSpec.describe Controller do
         # Expecting an error message to be displayed
         expect(view).to receive(:display_error).with('No session is running')
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -162,7 +162,7 @@ RSpec.describe Controller do
         # Expecting the total time to be displayed
         expect(view).to receive(:total_time).with(Project.new(name: 'Project Name'))
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -181,7 +181,7 @@ RSpec.describe Controller do
         allow(Project).to receive(:first).with(name: project_name).and_return(project)
 
         # Stubbing project_name_from_list to return the specified project name
-        allow(controller).to receive(:project_name_from_list).and_return(project_name)
+        allow(router).to receive(:project_name_from_list).and_return(project_name)
 
         # Expecting the project and its sessions to be deleted
         expect(project).to receive(:sessions).and_return([])
@@ -190,7 +190,7 @@ RSpec.describe Controller do
         # Expecting a success message to be displayed
         expect(view).to receive(:display_success).with("Project '#{project_name}' deleted successfully")
 
-        controller.execute
+        router.execute
       end
     end
   end

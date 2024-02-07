@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # This class is responsible for executing the logic based on the options provided by the user.
-class Controller
+class Router
   def initialize(options, view)
     @options = options
     @view = view
