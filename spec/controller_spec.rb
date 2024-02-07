@@ -109,5 +109,47 @@ RSpec.describe Controller do
         controller.execute
       end
     end
+
+    context 'when the pause option is provided' do
+      let(:options) { { pause: true } }
+
+      it 'ends the session for the current project' do
+        # Stubbing a session that is currently running
+        running_session = instance_double(Session, project: Project.new(name: 'Running Project'), end_time: nil)
+
+        # Stubbing the save method of the session
+        allow(running_session).to receive(:save)
+
+        # Stubbing the end_time= method of the session
+        allow(running_session).to receive(:end_time=)
+
+        # Stubbing the valid? method of the session to return true
+        allow(running_session).to receive(:valid?).and_return(true)
+
+        # Stubbing the find method of Session to return the running session
+        allow(Session).to receive(:where).and_return([running_session])
+
+        # Expecting the controller to save the session
+        expect(running_session).to receive(:save)
+
+        # Expecting the controller to update the end time of the session
+        expect(running_session).to receive(:end_time=)
+
+        # Expecting a success message to be displayed
+        expect(view).to receive(:display_success).with("Session ended for project 'Running Project'")
+
+        controller.execute
+      end
+
+      it 'displays an error message if no session is running' do
+        # Stubbing no session running
+        allow(Session).to receive(:where).and_return([])
+
+        # Expecting an error message to be displayed
+        expect(view).to receive(:display_error).with('No session is running')
+
+        controller.execute
+      end
+    end
   end
 end
