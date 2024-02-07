@@ -24,6 +24,7 @@ class Controller
     when :pause then end_session
     when :list then list_projects
     when :total then total_time(@options[:total])
+    when :delete then delete_project
     end
   end
 
@@ -99,5 +100,16 @@ class Controller
     return @view.display_error("Project '#{project_name}' not found") if project.nil?
 
     @view.total_time(project)
+  end
+
+  def delete_project
+    project_name = project_name_from_list
+    project = Project.first(name: project_name)
+
+    return if @view.ask_for_option("Are you sure you want to delete project '#{project_name}'?", %w[No Yes]) == 'No'
+
+    project.sessions.each(&:destroy)
+    project.destroy
+    @view.display_success("Project '#{project_name}' deleted successfully")
   end
 end
