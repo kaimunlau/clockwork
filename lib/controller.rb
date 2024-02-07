@@ -12,15 +12,20 @@ class Controller
 
     return @view.too_many_options if @options.length > 1
 
-    # TODO: Implement the logic to execute various actions based on the options
-    new_project if @options[:new]
-    start_session(@options[:start]) if @options[:start]
-    end_session if @options[:pause]
-    list_projects if @options[:list]
-    total_time(@options[:total]) if @options[:total]
+    pick_action
   end
 
   private
+
+  def pick_action
+    case @options.keys.first
+    when :new then new_project
+    when :start then start_session(@options[:start])
+    when :pause then end_session
+    when :list then list_projects
+    when :total then total_time(@options[:total])
+    end
+  end
 
   def new_project
     project_name = @view.ask_for_input('What is the name of your project?')
