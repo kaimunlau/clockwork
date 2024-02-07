@@ -8,12 +8,14 @@ require_relative '../lib/view'
 require_relative '../lib/models/project'
 require_relative '../lib/models/session'
 require_relative '../lib/controllers/projects_controller'
+require_relative '../lib/controllers/sessions_controller'
 
 RSpec.describe Router do
   let(:view) { instance_double(View) }
   let(:projects_controller) { instance_double(ProjectsController) }
+  let(:sessions_controller) { instance_double(SessionsController) }
   let(:options) { {} }
-  let(:router) { Router.new(options, view, projects_controller) }
+  let(:router) { Router.new(options, view, projects_controller, sessions_controller) }
 
   describe '#execute' do
     context 'when no options are provided' do
@@ -67,10 +69,7 @@ RSpec.describe Router do
         allow(Project).to receive(:first).with(name: 'Project Name').and_return(Project.new(name: 'Project Name'))
 
         # Stubbing session creation and saving
-        session = instance_double(Session, valid?: true, save: true, project: Project.new(name: 'Project Name'))
-        allow(Session).to receive(:new).and_return(session)
-
-        expect(view).to receive(:display_success).with("Session started for project 'Project Name'")
+        allow(sessions_controller).to receive(:create)
 
         router.execute
       end

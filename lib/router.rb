@@ -2,10 +2,11 @@
 
 # This class is responsible for executing the logic based on the options provided by the user.
 class Router
-  def initialize(options, view, projects_controller)
+  def initialize(options, view, projects_controller, sessions_controller)
     @options = options
     @view = view
     @projects_controller = projects_controller
+    @sessions_controller = sessions_controller
   end
 
   def execute
@@ -53,8 +54,7 @@ class Router
     return @view.display_message("A session is already running for project #{project.name}") if project.session_running?
 
     # else, start a new session
-    session = Session.new(project_id: project.id, start_time: Time.now)
-    save_session(session, 'start')
+    @sessions_controller.create(project)
   end
 
   def project_name_from_list
