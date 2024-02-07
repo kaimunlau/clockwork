@@ -165,5 +165,33 @@ RSpec.describe Controller do
         controller.execute
       end
     end
+
+    context 'when the delete option is provided' do
+      let(:options) { { delete: true } }
+
+      it 'deletes the specified project' do
+        project_name = 'Project to Delete'
+
+        # Stubbing the project deletion confirmation
+        allow(view).to receive(:ask_for_option).with("Are you sure you want to delete project '#{project_name}'?",
+                                                     %w[No Yes]).and_return('Yes')
+
+        # Stubbing the project retrieval
+        project = instance_double(Project, sessions: [], destroy: true)
+        allow(Project).to receive(:first).with(name: project_name).and_return(project)
+
+        # Stubbing project_name_from_list to return the specified project name
+        allow(controller).to receive(:project_name_from_list).and_return(project_name)
+
+        # Expecting the project and its sessions to be deleted
+        expect(project).to receive(:sessions).and_return([])
+        expect(project).to receive(:destroy)
+
+        # Expecting a success message to be displayed
+        expect(view).to receive(:display_success).with("Project '#{project_name}' deleted successfully")
+
+        controller.execute
+      end
+    end
   end
 end
