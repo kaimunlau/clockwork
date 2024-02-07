@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 # This class is responsible for executing the logic based on the options provided by the user.
-class Controller
-  def initialize(options, view)
+class Router
+  def initialize(options, view, projects_controller, sessions_controller)
     @options = options
     @view = view
+    @projects_controller = projects_controller
+    @sessions_controller = sessions_controller
   end
 
   def execute
@@ -30,21 +32,11 @@ class Controller
 
   def new_project
     project_name = @view.ask_for_input('What is the name of your project?')
-    project = Project.new(name: project_name)
-    save_project(project)
+    @projects_controller.create(project_name)
 
     return unless @view.ask_for_option('Do you want to start a session for this project?', %w[Yes No]) == 'Yes'
 
     start_session(project_name)
-  end
-
-  def save_project(project)
-    if project.valid?
-      project.save
-      @view.display_success("Project '#{project.name}' created successfully")
-    else
-      @view.display_error("Could not create project '#{project.name}': #{project.errors.full_messages.join(', ')}")
-    end
   end
 
   def start_session(project_name)
@@ -62,8 +54,7 @@ class Controller
     return @view.display_message("A session is already running for project #{project.name}") if project.session_running?
 
     # else, start a new session
-    session = Session.new(project_id: project.id, start_time: Time.now)
-    save_session(session, 'start')
+    @sessions_controller.create(project)
   end
 
   def project_name_from_list
@@ -88,10 +79,7 @@ class Controller
   end
 
   def list_projects
-    projects = Project.all
-    return @view.no_projects if projects.empty?
-
-    @view.display_projects(projects)
+    @projects_controller.index
   end
 
   def total_time(project_name)
@@ -104,12 +92,6 @@ class Controller
 
   def delete_project
     project_name = project_name_from_list
-    project = Project.first(name: project_name)
-
-    return if @view.ask_for_option("Are you sure you want to delete project '#{project_name}'?", %w[No Yes]) == 'No'
-
-    project.sessions.each(&:destroy)
-    project.destroy
-    @view.display_success("Project '#{project_name}' deleted successfully")
+    @projects_controller.delete(project_name)
   end
 end

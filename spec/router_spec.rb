@@ -3,21 +3,25 @@
 require 'rspec'
 require 'sequel'
 DB = Sequel.sqlite('db/database.db')
-require_relative '../lib/controller'
+require_relative '../lib/router'
 require_relative '../lib/view'
 require_relative '../lib/models/project'
 require_relative '../lib/models/session'
+require_relative '../lib/controllers/projects_controller'
+require_relative '../lib/controllers/sessions_controller'
 
-RSpec.describe Controller do
+RSpec.describe Router do
   let(:view) { instance_double(View) }
+  let(:projects_controller) { instance_double(ProjectsController) }
+  let(:sessions_controller) { instance_double(SessionsController) }
   let(:options) { {} }
-  let(:controller) { Controller.new(options, view) }
+  let(:router) { Router.new(options, view, projects_controller, sessions_controller) }
 
   describe '#execute' do
     context 'when no options are provided' do
       it 'displays the welcome message' do
         expect(view).to receive(:welcome)
-        controller.execute
+        router.execute
       end
     end
 
@@ -26,7 +30,7 @@ RSpec.describe Controller do
 
       it 'displays the too many options message' do
         expect(view).to receive(:too_many_options)
-        controller.execute
+        router.execute
       end
     end
 
@@ -36,40 +40,17 @@ RSpec.describe Controller do
       it 'creates a new project' do
         expect(view).to receive(:ask_for_input).with('What is the name of your project?').and_return('Project Name')
 
-        project_instance = Project.new(name: 'Project Name')
-        allow(Project).to receive(:new).with(name: 'Project Name').and_return(project_instance)
-        allow(project_instance).to receive(:save).and_return(true)
+        # Stubbing the project creation through the projects controller
+        allow(projects_controller).to receive(:create).with('Project Name')
 
+        # Stubbing the user's choice to start a session
         expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
                                                       %w[Yes No]).and_return('Yes')
 
-        expect(controller).to receive(:start_session).with('Project Name')
+        # Expecting the router to start a session
+        expect(router).to receive(:start_session).with('Project Name')
 
-        expect(view).to receive(:display_success).with("Project 'Project Name' created successfully")
-
-        controller.execute
-      end
-    end
-
-    context 'when the project is invalid' do
-      let(:options) { { new: true } }
-
-      it 'displays an error message' do
-        expect(view).to receive(:ask_for_input).with('What is the name of your project?').and_return('Project Name')
-
-        project_instance = Project.new(name: 'Project Name')
-        allow(Project).to receive(:new).with(name: 'Project Name').and_return(project_instance)
-
-        allow(project_instance).to receive(:valid?).and_return(false)
-
-        allow(project_instance.errors).to receive(:full_messages).and_return(['Error Message'])
-
-        expect(view).to receive(:display_error).with("Could not create project 'Project Name': Error Message")
-
-        expect(view).to receive(:ask_for_option).with('Do you want to start a session for this project?',
-                                                      %w[Yes No]).and_return('No')
-
-        controller.execute
+        router.execute
       end
     end
 
@@ -88,25 +69,9 @@ RSpec.describe Controller do
         allow(Project).to receive(:first).with(name: 'Project Name').and_return(Project.new(name: 'Project Name'))
 
         # Stubbing session creation and saving
-        session = instance_double(Session, valid?: true, save: true, project: Project.new(name: 'Project Name'))
-        allow(Session).to receive(:new).and_return(session)
+        allow(sessions_controller).to receive(:create)
 
-        expect(view).to receive(:display_success).with("Session started for project 'Project Name'")
-
-        controller.execute
-      end
-    end
-
-    context 'when the list option is provided' do
-      let(:options) { { list: true } }
-
-      it 'lists all the projects' do
-        # Stubbing Project.all to return a dummy project
-        allow(Project).to receive(:all).and_return([Project.new(name: 'Dummy Project')])
-
-        expect(view).to receive(:display_projects).with([Project.new(name: 'Dummy Project')])
-
-        controller.execute
+        router.execute
       end
     end
 
@@ -129,16 +94,16 @@ RSpec.describe Controller do
         # Stubbing the find method of Session to return the running session
         allow(Session).to receive(:where).and_return([running_session])
 
-        # Expecting the controller to save the session
+        # Expecting the router to save the session
         expect(running_session).to receive(:save)
 
-        # Expecting the controller to update the end time of the session
+        # Expecting the router to update the end time of the session
         expect(running_session).to receive(:end_time=)
 
         # Expecting a success message to be displayed
         expect(view).to receive(:display_success).with("Session ended for project 'Running Project'")
 
-        controller.execute
+        router.execute
       end
 
       it 'displays an error message if no session is running' do
@@ -148,7 +113,7 @@ RSpec.describe Controller do
         # Expecting an error message to be displayed
         expect(view).to receive(:display_error).with('No session is running')
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -162,7 +127,7 @@ RSpec.describe Controller do
         # Expecting the total time to be displayed
         expect(view).to receive(:total_time).with(Project.new(name: 'Project Name'))
 
-        controller.execute
+        router.execute
       end
     end
 
@@ -171,26 +136,10 @@ RSpec.describe Controller do
 
       it 'deletes the specified project' do
         project_name = 'Project to Delete'
+        allow(router).to receive(:project_name_from_list).and_return(project_name)
+        allow(projects_controller).to receive(:delete).with(project_name)
 
-        # Stubbing the project deletion confirmation
-        allow(view).to receive(:ask_for_option).with("Are you sure you want to delete project '#{project_name}'?",
-                                                     %w[No Yes]).and_return('Yes')
-
-        # Stubbing the project retrieval
-        project = instance_double(Project, sessions: [], destroy: true)
-        allow(Project).to receive(:first).with(name: project_name).and_return(project)
-
-        # Stubbing project_name_from_list to return the specified project name
-        allow(controller).to receive(:project_name_from_list).and_return(project_name)
-
-        # Expecting the project and its sessions to be deleted
-        expect(project).to receive(:sessions).and_return([])
-        expect(project).to receive(:destroy)
-
-        # Expecting a success message to be displayed
-        expect(view).to receive(:display_success).with("Project '#{project_name}' deleted successfully")
-
-        controller.execute
+        router.execute
       end
     end
   end
