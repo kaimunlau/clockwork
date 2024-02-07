@@ -39,12 +39,18 @@ class Project < Sequel::Model
       duration = end_time - session.start_time
       total_time += duration
     end
-    total_time_in_hours_minutes(total_time)
+    total_time
   end
 
-  def total_time_in_hours_minutes(total_time)
-    hours = total_time / 3600
-    minutes = (total_time % 3600) / 60
+  def total_time_in_hours_minutes(time = total_time)
+    hours = time / 3600
+    minutes = (time % 3600) / 60
     "#{hours.round}h #{minutes.round}m"
+  end
+
+  def total_time_working_days(day_length, time = total_time)
+    # calculate the total time in days based on the length of a working day (in hours)
+    time /= 3600
+    (time / day_length).round(2)
   end
 end

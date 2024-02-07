@@ -151,5 +151,19 @@ RSpec.describe Controller do
         controller.execute
       end
     end
+
+    context 'when the total option is provided' do
+      let(:options) { { total: 'Project Name' } }
+
+      it 'displays the total time for the specified project' do
+        # Stubbing Project.first to return the specified project
+        allow(Project).to receive(:first).with(name: 'Project Name').and_return(Project.new(name: 'Project Name'))
+
+        # Expecting the total time to be displayed
+        expect(view).to receive(:total_time).with(Project.new(name: 'Project Name'))
+
+        controller.execute
+      end
+    end
   end
 end

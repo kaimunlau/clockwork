@@ -46,7 +46,16 @@ class View
   def display_projects(projects)
     frame do
       puts 'Your projects:'
-      projects.each { |project| puts "#{project.name}#{project.status} | Total time: #{project.total_time}" }
+      projects.each do |project|
+        puts "#{project.name}#{project.status} | Total time: #{project.total_time_in_hours_minutes}"
+      end
+    end
+  end
+
+  def total_time(project)
+    frame do
+      puts "Total time for project #{project.name}: #{project.total_time_in_hours_minutes}"
+      puts "That's #{project.total_time_working_days(8)} working days (8h/day)"
     end
   end
 

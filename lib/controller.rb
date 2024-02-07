@@ -17,6 +17,7 @@ class Controller
     start_session(@options[:start]) if @options[:start]
     end_session if @options[:pause]
     list_projects if @options[:list]
+    total_time(@options[:total]) if @options[:total]
   end
 
   private
@@ -85,5 +86,13 @@ class Controller
     return @view.no_projects if projects.empty?
 
     @view.display_projects(projects)
+  end
+
+  def total_time(project_name)
+    project_name = project_name_from_list if project_name.empty?
+    project = Project.first(name: project_name)
+    return @view.display_error("Project '#{project_name}' not found") if project.nil?
+
+    @view.total_time(project)
   end
 end
