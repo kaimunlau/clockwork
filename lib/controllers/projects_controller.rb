@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This class is responsible for managing the logic of projects
 class ProjectsController
   def initialize(view)
     @view = view
