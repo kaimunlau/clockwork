@@ -24,4 +24,4 @@ sessions_controller = SessionsController.new(view)
 
 # Execute program using controller and passing options
 router = Router.new(options, view, projects_controller, sessions_controller)
-router.execute
+view.frame('Clock Work', :box, :magenta) { router.execute }

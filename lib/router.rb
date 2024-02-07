@@ -58,7 +58,7 @@ class Router
   end
 
   def project_name_from_list
-    @view.ask_for_option('Enter the name of the project:', Project.all.map(&:name))
+    @view.ask_for_option('Pick a project:', Project.all.map(&:name))
   end
 
   def save_session(session, verb)
