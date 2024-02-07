@@ -31,4 +31,20 @@ class Project < Sequel::Model
   def status
     ' | in progress' if session_running?
   end
+
+  def total_time
+    total_time = 0
+    sessions.each do |session|
+      end_time = session.end_time.nil? ? Time.now : session.end_time
+      duration = end_time - session.start_time
+      total_time += duration
+    end
+    total_time_in_hours_minutes(total_time)
+  end
+
+  def total_time_in_hours_minutes(total_time)
+    hours = total_time / 3600
+    minutes = (total_time % 3600) / 60
+    "#{hours.round}h #{minutes.round}m"
+  end
 end

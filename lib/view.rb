@@ -46,7 +46,7 @@ class View
   def display_projects(projects)
     frame do
       puts 'Your projects:'
-      projects.each { |project| puts "#{project.name}#{project.status}" }
+      projects.each { |project| puts "#{project.name}#{project.status} | Total time: #{project.total_time}" }
     end
   end
 
