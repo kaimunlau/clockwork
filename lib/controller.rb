@@ -15,6 +15,7 @@ class Controller
     # TODO: Implement the logic to execute various actions based on the options
     new_project if @options[:new]
     start_session(@options[:start]) if @options[:start]
+    end_session if @options[:pause]
     list_projects if @options[:list]
   end
 
@@ -51,20 +52,28 @@ class Controller
 
     # else, start a new session
     session = Session.new(project_id: project.id, start_time: Time.now)
-    save_session(session)
+    save_session(session, 'start')
   end
 
   def project_name_from_list
     @view.ask_for_option('Enter the name of the project:', Project.all.map(&:name))
   end
 
-  def save_session(session)
+  def save_session(session, verb)
     if session.valid?
       session.save
-      @view.display_success("Session started for project '#{session.project.name}'")
+      @view.display_success("Session #{verb}ed for project '#{session.project.name}'")
     else
-      @view.display_error("Could not start session for project '#{session.project.name}': #{session.errors.full_messages.join(', ')}")
+      @view.display_error("Could not #{verb} session for project '#{session.project.name}': #{session.errors.full_messages.join(', ')}")
     end
+  end
+
+  def end_session
+    session = Session.where(end_time: nil).first
+    return @view.display_error('No session is running') if session.nil?
+
+    session.end_time = Time.now
+    save_session(session, 'end')
   end
 
   def list_projects
