@@ -6,6 +6,7 @@ require 'sequel'
 DB = Sequel.sqlite('db/database.db')
 require_relative 'models/project'
 require_relative 'models/session'
+require_relative 'controllers/projects_controller'
 require_relative 'option_parser'
 require_relative 'view'
 require_relative 'router'
@@ -16,6 +17,9 @@ options = OptionParser.parse(ARGV)
 # Create a new view
 view = View.new
 
+# Create controllers
+projects_controller = ProjectsController.new(view)
+
 # Execute program using controller and passing options
-router = Router.new(options, view)
+router = Router.new(options, view, projects_controller)
 router.execute
