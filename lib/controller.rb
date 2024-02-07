@@ -43,6 +43,10 @@ class Controller
   def start_session(project_name)
     return @view.no_projects if Project.all.empty?
 
+    if Session.where(end_time: nil).first
+      return @view.display_error('There is already a running session! Please end it before starting a new one.')
+    end
+
     project_name = project_name_from_list if project_name.empty?
     project = Project.first(name: project_name)
 
