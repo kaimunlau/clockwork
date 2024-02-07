@@ -28,10 +28,6 @@ class Project < Sequel::Model
     false
   end
 
-  def status
-    ' | in progress' if session_running?
-  end
-
   def total_time
     total_time = 0
     sessions.each do |session|
