@@ -1,14 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Function to detect the user's default shell configuration file
+# Function to detect the user's default shell configuration file and shell type
 detect_shell_config() {
   if [ -f "$HOME/.bashrc" ]; then
-      SHELL_CONFIG="$HOME/.bashrc"
+    SHELL_TYPE="bash"
+    SHELL_CONFIG="$HOME/.bashrc"
   elif [ -f "$HOME/.zshrc" ]; then
-      SHELL_CONFIG="$HOME/.zshrc"
+    SHELL_TYPE="zsh"
+    SHELL_CONFIG="$HOME/.zshrc"
   else
-      echo "Unable to detect shell configuration file (.bashrc or .zshrc). Please create the alias manually."
-      exit 1
+    echo "Unable to detect shell configuration file (.bashrc or .zshrc). Please create the alias manually."
+    exit 1
   fi
 }
 
@@ -37,7 +39,4 @@ rake db:migrate
 detect_shell_config
 echo "alias clock='ruby $(pwd)/lib/clockwork.rb'" >> "$SHELL_CONFIG"
 
-# Source the shell configuration file to apply the alias immediately
-source "$SHELL_CONFIG"
-
-echo "Installation completed successfully. Run 'clock -h' for instructions."
+echo "Installation completed successfully. Please restart your shell to use the 'clock' command."
