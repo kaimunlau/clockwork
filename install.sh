@@ -14,13 +14,6 @@ detect_shell_config() {
   fi
 }
 
-# Function to check if Oh My Zsh is installed
-check_oh_my_zsh() {
-  if [ "$SHELL_TYPE" = "zsh" ] && [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is installed. Please ensure you switch to Zsh shell for full functionality."
-  fi
-}
-
 # Check if Ruby is installed
 if ! command -v ruby &> /dev/null; then
   echo "Ruby is not installed. Please install Ruby before proceeding."
@@ -46,10 +39,4 @@ rake db:migrate
 detect_shell_config
 echo "alias clock='ruby $(pwd)/lib/clockwork.rb'" >> "$SHELL_CONFIG"
 
-# Source the shell configuration file to apply the alias immediately
-source "$SHELL_CONFIG"
-
-# Check if Oh My Zsh is installed
-check_oh_my_zsh
-
-echo "Installation completed successfully. Run 'clock' to start the clock. Run 'clock -h' for help. Enjoy!"
+echo "Installation completed successfully. Please restart your shell to use the 'clock' command."
