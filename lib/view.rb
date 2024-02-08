@@ -46,10 +46,9 @@ class View
   def display_projects(projects)
     frame('All projects') do
       projects.each_with_index do |project, index|
-        frame(project.name, :bracket, :green) do
-          puts "Status: #{project.session_running? ? 'Running' : 'Paused'}"
-          puts "Total time: #{project.total_time_in_hours_minutes}"
-        end
+        puts CLI::UI.fmt "{{bold:Project:}} #{project.name}"
+        puts CLI::UI.fmt "{{bold:Status:}} #{project.session_running? ? 'Running' : 'Paused'}"
+        puts CLI::UI.fmt "{{bold:Total time:}} #{project.total_time_in_hours_minutes}"
         CLI::UI::Frame.divider('') unless index == projects.length - 1
       end
     end
