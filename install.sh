@@ -36,7 +36,6 @@ rake db:migrate
 # Create an alias
 detect_shell_config
 echo "alias clock='ruby $(pwd)/lib/clockwork.rb'" >> "$SHELL_CONFIG"
-echo "Alias created. You can now run the program by typing 'clock'."
 
 # Source the shell configuration file to apply the alias immediately
 source "$SHELL_CONFIG"
