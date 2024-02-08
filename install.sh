@@ -14,11 +14,6 @@ detect_shell_config() {
   fi
 }
 
-# Function to set environment variables for database configuration
-set_database_env() {
-    echo "export DATABASE_URL='sqlite://$(pwd)/db/database.db'" >> "$SHELL_CONFIG"
-}
-
 # Check if Ruby is installed
 if ! command -v ruby &> /dev/null; then
   echo "Ruby is not installed. Please install Ruby before proceeding."
@@ -42,7 +37,6 @@ rake db:migrate
 
 # Create an alias
 detect_shell_config
-set_database_env
 
 echo "alias clock='ruby $(pwd)/lib/clockwork.rb'" >> "$SHELL_CONFIG"
 
