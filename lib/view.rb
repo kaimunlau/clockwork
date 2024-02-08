@@ -55,8 +55,10 @@ class View
   end
 
   def total_time(project)
-    frame do
-      puts "Total time for project #{project.name}: #{project.total_time_in_hours_minutes}"
+    frame(CLI::UI.fmt("{{bold:Project:}} #{project.name}")) do
+      puts CLI::UI.fmt "{{bold:Total time:}} #{project.total_time_in_hours_minutes}"
+      puts CLI::UI.fmt "{{bold:Sessions:}} #{project.sessions.count}"
+      CLI::UI::Frame.divider('{{i}}')
       puts "That's #{project.total_time_working_days(8)} working days (8h/day)"
     end
   end
