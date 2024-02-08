@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Function to detect the user's default shell configuration file
 detect_shell_config() {
