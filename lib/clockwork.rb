@@ -3,7 +3,8 @@
 # This file is the entry point for the program
 
 require 'sequel'
-DB = Sequel.sqlite('db/database.db')
+db_path = File.expand_path('../db/database.db', __dir__)
+DB = Sequel.sqlite(db_path)
 require_relative 'models/project'
 require_relative 'models/session'
 require_relative 'controllers/projects_controller'
