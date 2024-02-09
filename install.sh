@@ -24,15 +24,23 @@ fi
 bundler_version=$(bundle --version | awk '{print $3}')
 if [[ -z "$bundler_version" || "$(echo "$bundler_version < 2" | bc)" -eq 1 ]]; then
   echo "Bundler is not installed or the version is smaller than 2. Installing/updating Bundler..."
-  gem install bundler -v "$(grep -o 'BUNDLED WITH[^,]*' Gemfile.lock | cut -d' ' -f3)"
-  echo "Bundler installed successfully."
+
+  # Attempt to install/update Bundler without sudo first
+  gem install bundler -v "$(grep -o 'BUNDLED WITH[^,]*' Gemfile.lock | cut -d' ' -f3)" || {
+    # If it fails due to permission, retry with sudo
+    echo "Attempting to install/update Bundler with sudo..."
+    sudo gem install bundler -v "$(grep -o 'BUNDLED WITH[^,]*' Gemfile.lock | cut -d' ' -f3)"
+  }
 fi
 
 # Change directory to the program's directory
 cd "$(dirname "$0")" || exit
 
 # Install dependencies
-bundle install
+bundle install || {
+  echo "Attempting to install gems with sudo..."
+  sudo bundle install
+}
 
 # Run database migrations
 rake db:migrate
