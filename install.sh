@@ -20,10 +20,12 @@ if ! command -v ruby &> /dev/null; then
   exit 1
 fi
 
-# Check if Bundler is installed
-if ! command -v bundle &> /dev/null; then
-  echo "Bundler is not installed. Installing Bundler..."
+# Check if Bundler is installed and if its version is smaller than 2
+bundler_version=$(bundle --version | awk '{print $3}')
+if [[ -z "$bundler_version" || "$(echo "$bundler_version < 2" | bc)" -eq 1 ]]; then
+  echo "Bundler is not installed or the version is smaller than 2. Installing/updating Bundler..."
   gem install bundler -v "$(grep -o 'BUNDLED WITH[^,]*' Gemfile.lock | cut -d' ' -f3)"
+  echo "Bundler installed successfully."
 fi
 
 # Change directory to the program's directory
