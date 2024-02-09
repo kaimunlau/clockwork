@@ -23,7 +23,7 @@ fi
 # Check if Bundler is installed
 if ! command -v bundle &> /dev/null; then
   echo "Bundler is not installed. Installing Bundler..."
-  gem install bundler
+  gem install bundler -v "$(grep -o 'BUNDLED WITH[^,]*' Gemfile.lock | cut -d' ' -f3)"
 fi
 
 # Change directory to the program's directory
