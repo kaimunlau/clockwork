@@ -39,9 +39,9 @@ class Project < Sequel::Model
   end
 
   def total_time_in_hours_minutes(time = total_time)
-    hours = time / 3600
-    minutes = (time % 3600) / 60
-    "#{hours.round}h #{minutes.round}m"
+    hours = (time / 3600).floor
+    minutes = ((time % 3600) / 60).round
+    "#{hours}h #{minutes}m"
   end
 
   def total_time_working_days(day_length, time = total_time)

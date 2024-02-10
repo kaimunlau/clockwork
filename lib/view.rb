@@ -41,6 +41,7 @@ class View
 
   def no_projects
     display_error('No projects yet. Please create a project first. Run clockwork.rb -h for help')
+    exit
   end
 
   def display_projects(projects)
