@@ -58,6 +58,8 @@ class Router
   end
 
   def project_name_from_list
+    @view.no_projects if Project.all.empty?
+
     @view.ask_for_option('Pick a project:', Project.all.map(&:name))
   end
 
@@ -79,6 +81,8 @@ class Router
   end
 
   def list_projects
+    @view.no_projects if Project.all.empty?
+
     @projects_controller.index
   end
 
